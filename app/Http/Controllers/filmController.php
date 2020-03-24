@@ -37,18 +37,28 @@ class filmController extends Controller
      */
     public function store(Request $request)
     {
+        // $request->validate([
+        //     'title' => 'required|unique:posts|max:255',
+        //     'director' => 'required|string|max:255',
+        //     'cast' => 'required|string|max:255',
+        //     'price' => 'required|numeric|min:0.01|max:1000',
+        //     'year' => 'required|date',
+        //     'production_house' => 'required|string|max:255',
+        // ]);
         $data = $request->all();
         $film = new Film;
-        $film->title = $data['title'];
-        $film->director = $data['director'];
-        $film->cast = $data['cast'];
-        $film->price = $data['price'];
-        $film->year = $data['year'];
-        $film->production_house = $data['production_house'];
-        $save = $film->save();
-        if ($save) {
+        // $film->title = $data['title'];
+        // $film->director = $data['director'];
+        // $film->cast = $data['cast'];
+        // $film->price = $data['price'];
+        // $film->year = $data['year'];
+        // $film->production_house = $data['production_house'];
+        $film->fill($data);
+        $saved = $film->save();
+        if ($saved) {
             return redirect()->route('films.index');
         }
+        dd('errore');
     }
 
     /**
@@ -57,9 +67,13 @@ class filmController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Film $film)
     {
-        //
+        if(empty($film)) {
+            abort('404');
+        }
+
+        return view('film.show', compact('film'));
     }
 
     /**
@@ -68,9 +82,13 @@ class filmController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Film $film)
     {
-        //
+        if(empty($film)) {
+            abort('404');
+        }
+
+        return view('film.edit', compact('film'));
     }
 
     /**
@@ -80,9 +98,13 @@ class filmController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Film $film)
     {
-        //
+        $data = $request->all();
+        $updated = $film->update($data);
+        if ($updated) {
+            return redirect()->route('films.show', compact('film'));
+        }
     }
 
     /**
@@ -91,8 +113,14 @@ class filmController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Film $film)
     {
-        //
+        $id = $film->id;
+        $film->delete();
+        $data = [
+            'id' => $id,
+            'film' => Film::all()
+        ];
+        return view('film.index', $data);
     }
 }
