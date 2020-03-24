@@ -16,7 +16,7 @@ class filmController extends Controller
     public function index()
     {
         $films = film::all();
-        dd($films);
+        return view('film.home', compact('films'));
     }
 
     /**
@@ -115,12 +115,13 @@ class filmController extends Controller
      */
     public function destroy(Film $film)
     {
-        $id = $film->id;
+        $title = $film->title;
         $film->delete();
         $data = [
-            'id' => $id,
+            'title' => $title,
             'film' => Film::all()
         ];
-        return view('film.index', $data);
+        $films = film::all();
+        return view('film.home', $data, compact('films'));
     }
 }

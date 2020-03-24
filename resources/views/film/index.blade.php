@@ -7,9 +7,6 @@
     <title>Document</title>
 </head>
 <body>
-    @if(!empty($id))
-      <div>Hai cancellato il film {{$id}}</div>
-    @endif
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
